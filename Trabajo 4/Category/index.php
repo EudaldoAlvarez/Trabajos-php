@@ -20,12 +20,16 @@
 	<h1>
 		Categories
 		<?php if (isset($_SESSION) && isset($_SESSION['error'])): ?>
-			<?php echo "<h3>La operacion se realizo con error: ".$_SESSION['error']."</h3>" ?>
-			<?php unset($_SESSION['error'])?>
+			<h3>
+				Error: <?= $_SESSION['error']?>
+			</h3>
+			<?php unset($_SESSION['error']) ?>
 		<?php endif ?>
 		<?php if (isset($_SESSION) && isset($_SESSION['success'])): ?>
-			<?php echo "<h3>La operacion se realizo con exito: ".$_SESSION['success']."</h3>" ?>
-			<?php unset($_SESSION['success'])?>
+			<h3>
+				Correcto: <?= $_SESSION['success']?>
+			</h3>
+			<?php unset($_SESSION['success']) ?>
 		<?php endif ?>
 	</h1>
 	<div>
@@ -139,7 +143,7 @@
 			document.getElementById("id").value=id;
 		}
 		function remove(id){
-			var confirm = prompt("Si quiere eliminar el registro ,escriba:"+id);
+			var confirm = prompt("Si quiere eliminar el registro ,escriba: "+id);
 			if (confirm == id) {
 
 				document.getElementById('id_destroy').value=id;

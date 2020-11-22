@@ -1,6 +1,10 @@
 <?php 
 include "connectionController.php";
 
+if (!isset($_SESSION)) {
+	session_start();
+}
+
 if (isset($_POST['action'])) {
 
 	$CategoryController =new CategoryController();
@@ -23,8 +27,8 @@ if (isset($_POST['action'])) {
 				$CategoryController->update($id,$name,$description,$status);
 			break;
 			case 'destroy':
-				$id=($_POST['id']);
-
+				$id=strip_tags($_POST['id']);
+				var_dump($_POST);
 				$CategoryController->destroy($id);	
 			break;
 		
@@ -40,14 +44,18 @@ class CategoryController
 				$prepared_query = $conn->prepare($query);
 				$prepared_query->bind_param('sss',$name,$description,$status);
 				if ($prepared_query->execute()) {
+					$_SESSION['success']='El registro se ha guardado correctamente';
 					header("Location:".$_SERVER['HTTP_REFERER']);
 				}else{
+					$_SESSION['error']='verifique los datos enviados';
 					header("Location:".$_SERVER['HTTP_REFERER']);
 				}
 			}else{
+				$_SESSION['error']='verifique la informacion del formulario';
 				header("Location:".$_SERVER['HTTP_REFERER']);
 			}
 		}else{
+			$_SESSION['error']='verifique la conexion a la base de datos';
 			header("Location:".$_SERVER['HTTP_REFERER']);
 		}
 	}
@@ -81,14 +89,18 @@ class CategoryController
 				$prepared_query = $conn->prepare($query);
 				$prepared_query->bind_param('sssi',$name,$description,$status,$id);
 				if ($prepared_query->execute()) {
+					$_SESSION['success']='Los datos se han editado correctamente';
 					header("Location:".$_SERVER['HTTP_REFERER']);
 				}else{
+					$_SESSION['error']='verifique la conexion a la base de datos';
 					header("Location:".$_SERVER['HTTP_REFERER']);
 				}
 			}else{
+				$_SESSION['error']='verifique la conexion a la base de datos';
 				header("Location:".$_SERVER['HTTP_REFERER']);
 			}
 		}else{
+			$_SESSION['error']='verifique la conexion a la base de datos';
 			header("Location:".$_SERVER['HTTP_REFERER']);
 		}
 	}
@@ -96,15 +108,23 @@ class CategoryController
 	public function destroy($id){
 		$conn=connect();
 		if ($conn->connect_error==false) {
-			$query="delete from categories where id =>";
-			$prepared_query=$conn->prepare($query);
-			$prepared_query->bind_param('i',$id);
-			if ($prepared_query->execute()) {
+			if ($id !="") {
+				$query="delete from categories where id = ?";
+				$prepared_query = $conn->prepare($query);
+				$prepared_query->bind_param('i',$id);
+				if ($prepared_query->execute()) {
+					$_SESSION['success']='El registro se ha Eliminado correctamente';
 					header("Location:".$_SERVER['HTTP_REFERER']);
 				}else{
+					$_SESSION['error']='id incorrecto o no existe';
 					header("Location:".$_SERVER['HTTP_REFERER']);
 				}
+			}else{
+				$_SESSION['error']='No se envio el id';
+				header("Location:".$_SERVER['HTTP_REFERER']);
+			}
 		}else{
+			$_SESSION['error']='verifique la conexion a la base de datos';
 			header("Location:".$_SERVER['HTTP_REFERER']);
 		}
 	}
